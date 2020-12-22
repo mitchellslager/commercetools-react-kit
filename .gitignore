@@ -1,0 +1,26 @@
+.env
+
+dist
+node_modules/
+coverage
+test_output/
+
+# Yarn output
+yarn-error.log
+
+# Editor files
+/.idea
+/.vimrc
+
+# File extensions
+.DS_Store
+*.pyc
+__pycache__
+*.sqlite3
+*.mo
+.cache
+.version
+/.python-version
+
+# Debug files
+npm-debug.log

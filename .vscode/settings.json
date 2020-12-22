@@ -1,0 +1,8 @@
+{
+  "cSpell.words": [],
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.referencesCodeLens.enabled": true,
+  "editor.formatOnSave": true,
+  "typescript.format.enable": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
