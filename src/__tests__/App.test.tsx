@@ -6,12 +6,12 @@ describe('App', () => {
   afterEach(cleanup)
 
   test('renders the app', () => {
-    const component = render(<App title="Test" />)
+    const component = render(<App />)
     expect(component).toBeTruthy()
   })
 
   test('displays a title', () => {
-    const component = render(<App title="Test" />)
+    const component = render(<App />)
     expect(component.findByText('Test')).toBeTruthy()
   })
 })
