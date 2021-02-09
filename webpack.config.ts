@@ -31,12 +31,16 @@ const configFactory: ConfigurationFactory = (_, argv) => ({
   output: {
     filename: '[name].js',
     path: dist,
+    publicPath: staticFiles,
     sourceMapFilename: 'sourcemaps/[file].map',
   },
   devtool: argv.mode === 'production' ? false : 'source-map',
   devServer: {
+    historyApiFallback: {
+      index: staticFiles,
+    },
     contentBase: '/',
-    port: 3000,
+    port: 8080,
     hot: true,
   },
   module: {
