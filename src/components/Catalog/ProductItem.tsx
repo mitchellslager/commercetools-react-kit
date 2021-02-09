@@ -1,13 +1,25 @@
+import { Product } from '@commercetools/platform-sdk'
+import { Box, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
-import { Box, Button, makeStyles, Paper, Typography } from '@material-ui/core'
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart'
 import { Link as RouterLink } from 'react-router-dom'
+import { formatCurrency } from '~src/utils/formatting'
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'block',
+    color: theme.palette.text.primary,
+    textDecoration: 'none',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+
+    '&:hover': {
+      borderBottomColor: theme.palette.primary.main,
+    },
+  },
   image: {
     display: 'block',
     maxWidth: '100%',
-    height: 'auto',
+    height: 250,
+    objectFit: 'contain',
   },
   actions: {
     '& > .MuiButton-root': {
@@ -16,36 +28,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const ProductItem: React.FunctionComponent = () => {
+const ProductItem: React.FunctionComponent<{ product: Product }> = ({ product }) => {
   const classes = useStyles()
+  const key = product.key
+  const productData = product.masterData.current
 
   return (
-    <Paper elevation={0}>
+    <RouterLink to={`/product/${key}`} className={classes.root}>
       <img
-        src="https://placehold.co/500x300"
+        src={productData.masterVariant.images[0].url}
         alt="Product image"
         width="500"
         height="300"
         className={classes.image}
       />
-      <Box p={2}>
+      <Box py={4}>
         <Typography variant="h6" component="span">
-          € 24,95
+          {formatCurrency(productData.masterVariant.prices[0].value.centAmount / 100)}
         </Typography>
         <Typography variant="subtitle1" component="h3">
-          Product name
+          {/* vervangen met find */}
+          {productData.masterVariant.attributes
+            .filter((attr) => attr.name === 'designer')
+            .map((item) => item.value.label)}
         </Typography>
-        <Typography variant="body2">Product description consectetur adipiscing elit</Typography>
-        <Box className={classes.actions} mt={2}>
-          <Button variant="contained" color="primary" endIcon={<AddShoppingCartIcon />}>
-            Add to cart
-          </Button>
-          <Button variant="contained" color="secondary" component={RouterLink} to="detail">
-            Go to product
-          </Button>
-        </Box>
+        <Typography variant="body2" component="h3" color="textSecondary">
+          {productData.name.en}
+        </Typography>
+        {/* <Typography variant="body2">
+          {productData.metaDescription?.en || 'No description provided'}
+        </Typography> */}
       </Box>
-    </Paper>
+    </RouterLink>
   )
 }
 
