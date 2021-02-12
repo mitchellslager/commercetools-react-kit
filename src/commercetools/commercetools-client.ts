@@ -3,7 +3,7 @@ import { createHttpMiddleware } from '@commercetools/sdk-middleware-http'
 import { createClient } from '@commercetools/sdk-client'
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk'
 
-export const projectKey = 'react-components-kit'
+export const projectKey = process.env.CTP_PROJECT_KEY
 
 const authMiddleware = createAuthMiddlewareForClientCredentialsFlow({
   host: process.env.CTP_AUTH_URL,
@@ -12,7 +12,7 @@ const authMiddleware = createAuthMiddlewareForClientCredentialsFlow({
     clientId: process.env.CTP_CLIENT_ID,
     clientSecret: process.env.CTP_CLIENT_SECRET,
   },
-  scopes: ['manage_project:react-components-kit'],
+  scopes: [`manage_project:${process.env.CTP_PROJECT_KEY}`],
   fetch,
 })
 
