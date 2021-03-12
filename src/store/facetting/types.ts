@@ -1,8 +1,9 @@
-type SortOption = 'default' | 'score desc' | 'createdAt desc' | 'price desc' | 'price asc'
+export type SortOption = 'default' | 'score desc' | 'createdAt desc' | 'price desc' | 'price asc'
 
 export interface IPageState {
   limit: number
   offset: number
+  total: number
 }
 
 export interface IFilterState {

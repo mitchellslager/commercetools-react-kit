@@ -12,14 +12,17 @@ const CheckboxInput = ({
   checked,
   label,
   value,
+  count,
   onChange,
 }: {
   checked: boolean
   label: string
   value: string
+  count: number
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) => {
   const classes = useStyles()
+  const numberOfProducts = count && `(${count?.toString()})`
 
   return (
     <FormControlLabel
@@ -34,7 +37,7 @@ const CheckboxInput = ({
         />
       }
       value={value}
-      label={label}
+      label={`${label} ${numberOfProducts ?? '(n/a)'}`}
       className={classes.root}
     />
   )

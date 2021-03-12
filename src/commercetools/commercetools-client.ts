@@ -1,10 +1,18 @@
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth'
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http'
 import { createClient } from '@commercetools/sdk-client'
-import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk'
+import { createRequestBuilder } from '@commercetools/api-request-builder'
 
-export const projectKey = process.env.CTP_PROJECT_KEY
+const projectKey = process.env.CTP_PROJECT_KEY
 
+// API request builder
+const requestBuilder = createRequestBuilder({ projectKey })
+export const productProjectionsService = requestBuilder.productProjections
+export const productProjectionsSearchService = requestBuilder.productProjectionsSearch
+export const categoriesService = requestBuilder.categories
+export const productsService = requestBuilder.products
+
+// Middleware and client
 const authMiddleware = createAuthMiddlewareForClientCredentialsFlow({
   host: process.env.CTP_AUTH_URL,
   projectKey,
@@ -21,8 +29,6 @@ const httpMiddleware = createHttpMiddleware({
   fetch,
 })
 
-const ctpClient = createClient({
+export const client = createClient({
   middlewares: [authMiddleware, httpMiddleware],
 })
-
-export const apiRoot = createApiBuilderFromCtpClient(ctpClient)

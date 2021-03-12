@@ -1,4 +1,4 @@
-import { Product } from '@commercetools/platform-sdk'
+import { ProductProjection } from '@commercetools/platform-sdk'
 import { Box, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { Link as RouterLink } from 'react-router-dom'
@@ -28,15 +28,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const ProductItem: React.FunctionComponent<{ product: Product }> = ({ product }) => {
+const ProductItem: React.FunctionComponent<{ product: ProductProjection }> = ({ product }) => {
   const classes = useStyles()
   const key = product.key
-  const productData = product.masterData.current
 
   return (
     <RouterLink to={`/product/${key}`} className={classes.root}>
       <img
-        src={productData.masterVariant.images[0].url}
+        src={product.masterVariant.images[0].url}
         alt="Product image"
         width="500"
         height="300"
@@ -44,20 +43,17 @@ const ProductItem: React.FunctionComponent<{ product: Product }> = ({ product })
       />
       <Box py={4}>
         <Typography variant="h6" component="span">
-          {formatCurrency(productData.masterVariant.prices[0].value.centAmount / 100)}
+          {formatCurrency(product.masterVariant.prices[0].value.centAmount / 100)}
         </Typography>
         <Typography variant="subtitle1" component="h3">
           {/* vervangen met find */}
-          {productData.masterVariant.attributes
+          {product.masterVariant.attributes
             .filter((attr) => attr.name === 'designer')
             .map((item) => item.value.label)}
         </Typography>
         <Typography variant="body2" component="h3" color="textSecondary">
-          {productData.name.en}
+          {product.name.en}
         </Typography>
-        {/* <Typography variant="body2">
-          {productData.metaDescription?.en || 'No description provided'}
-        </Typography> */}
       </Box>
     </RouterLink>
   )

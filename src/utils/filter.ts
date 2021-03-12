@@ -1,5 +1,7 @@
-import { Category, Product } from '@commercetools/platform-sdk'
-import { IFilterState } from '~src/store/facetting/types'
+import { Category, TermFacetResult } from '@commercetools/platform-sdk'
+import { IFacetOption, IFacets } from '~src/store/catalog/types'
+import { IFilterState, SortOption } from '~src/store/facetting/types'
+// import { IFilterState } from '~src/store/facetting/types'
 
 export interface ILabeledValue<T> {
   label: string
@@ -12,52 +14,76 @@ export interface IFilterOptions {
   colors: ILabeledValue<string>[]
 }
 
-const mapAttributeToFilterOptions = (name: string, products: Product[]) => {
-  return (
-    products
-      // 1. Get all attributes with `name`
-      .map((p) => p.masterData.current.masterVariant.attributes.find((a) => a.name === name))
-      // 2. Map the data to a filter option
-      .map((value) => ({
-        label: value.value.label.en || value.value.label, // This kinda sucks, is there a better way?
-        value: value.value.key,
-      }))
-      // 3. Remove duplicate entries from final array
-      .filter((v, i, a) => a.findIndex((t) => t.value === v.value) === i)
-  )
-}
-
-const mapCategoriesToFilterOptions = (categories: Category[]) => {
+const mapCategoriesToFilterOptions = (categories: Category[]): ILabeledValue<string>[] => {
   return categories
     .filter((c) => !c.ancestors.length)
     .map((value) => ({
       label: value.name.en,
-      value: value.key,
+      value: value.id,
     }))
 }
 
-export const filterOptions = (products: Product[], categories: Category[]): IFilterOptions => {
+const mapFacetsToFilterOptions = (facets: IFacetOption[]) => {
+  return facets.map((facet) => ({
+    label: facet.label,
+    value: facet.key,
+    count: facet.productCount,
+  }))
+}
+
+export const filterOptions = (facets: IFacets, categories: Category[]) => {
   const categoryOptions = mapCategoriesToFilterOptions(categories)
-  const designerOptions = mapAttributeToFilterOptions('designer', products)
-  const colorOptions = mapAttributeToFilterOptions('color', products)
+  const designerOptions = mapFacetsToFilterOptions(facets['designer'])
+  const colorOptions = mapFacetsToFilterOptions(facets['colors'])
 
   return {
-    designer: designerOptions,
     categories: categoryOptions,
+    designer: designerOptions,
     colors: colorOptions,
   }
 }
 
-function getProductAttribute(product: Product, attribute: string) {
-  return product.masterData.current.masterVariant.attributes.find((a) => a.name === attribute).value
-    .key
+export const buildFilterQuery = (filter: IFilterState) => {
+  let queries = []
+
+  if (filter.categories.length) {
+    queries.push(`categories.id: ${filter.categories.map((item) => `subtree("${item}")`)}`)
+  }
+
+  if (filter.colors.length) {
+    queries.push(`variants.attributes.color.key:"${filter.colors.join('","')}"`)
+  }
+
+  if (filter.designer.length) {
+    queries.push(`variants.attributes.designer.key:"${filter.designer.join('","')}"`)
+  }
+
+  return queries
 }
 
-export const filteredProducts = (products: Product[], filterState: IFilterState) =>
-  products.filter(
-    (product) =>
-      nothingOrIncludes(filterState.designer, getProductAttribute(product, 'designer')) &&
-      nothingOrIncludes(filterState.colors, getProductAttribute(product, 'color'))
-  )
+export const buildSortingOption = (sort: SortOption): { by: string; direction: 'asc' | 'desc' } => {
+  return {
+    by: sort.split(' ')[0],
+    direction: sort.split(' ')[1] as 'asc' | 'desc',
+  }
+}
 
-export const nothingOrIncludes = <T>(list: T[], value: T) => !list.length || list.includes(value)
+export const buildFacettingOptions = (
+  facetKeys: TermFacetResult,
+  facetLabels: TermFacetResult
+): IFacetOption[] => {
+  let facets: IFacetOption[] = []
+  // We need to make a new object that combines the values from both facet results.
+  facetKeys.terms.forEach((facet, index) => {
+    let result = {
+      key: facet.term,
+      label: facetLabels.terms[index].term,
+      count: facet.count,
+      productCount: facet.productCount,
+    }
+
+    facets.push(result)
+  })
+
+  return facets
+}

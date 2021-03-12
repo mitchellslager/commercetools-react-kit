@@ -4,7 +4,7 @@ import { createBrowserHistory } from 'history'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
-import { getAllCategories } from './commercetools/commercetools-requests'
+import { getAllCategories, retrieveAllAttributes } from './commercetools/commercetools-requests'
 import RegisterPage from './components/Account/RegisterPage'
 import ProductDetailPage from './components/Catalog/ProductDetailPage'
 import ProductOverviewPage from './components/Catalog/ProductOverviewPage'
@@ -23,6 +23,8 @@ const App: React.FunctionComponent = () => {
     getAllCategories()
       .then((res) => dispatch(setCategories(res.results)))
       .catch((err) => console.log(err))
+
+    // retrieveAllAttributes().then((res) => console.log(res))
   }, [])
 
   return (

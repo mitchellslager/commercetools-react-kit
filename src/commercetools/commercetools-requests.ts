@@ -2,67 +2,43 @@
  * Please write a function for each Commercetools api call,
  * so these can be mocked in the unit tests.
  */
-import { projectKey, apiRoot } from './commercetools-client'
-
-const container = 'order-numbers'
-const key = 'order-number'
-
-type OrderNumber = { version?: number; value: number }
-
-export const searchProduct = (filter: string, sort: string) =>
-  apiRoot
-    .withProjectKey({ projectKey })
-    .productProjections()
-    .search()
-    .get({ queryArgs: { markMatchingVariants: true, sort: sort } })
-    .execute()
-    .then((r) => r.body)
+import { client, categoriesService, productProjectionsSearchService } from './commercetools-client'
 
 export const getAllCategories = () =>
-  apiRoot
-    .withProjectKey({ projectKey })
-    .categories()
-    .get()
-    .execute()
+  client
+    .execute({
+      uri: categoriesService.build(),
+      method: 'GET',
+    })
     .then((r) => r.body)
 
-export const queryProducts = (filter: string, sort: string) =>
-  apiRoot
-    .withProjectKey({ projectKey })
-    .products()
-    .get({ queryArgs: { where: filter, sort: sort } })
-    .execute()
+export const searchProductProjections = (
+  filter: string[],
+  sort: Array<{ by: string; direction: 'asc' | 'desc' }>,
+  page: number,
+  perPage: number
+) =>
+  client
+    .execute({
+      uri: productProjectionsSearchService
+        .parse({
+          filterByFacets: filter,
+          facet: [
+            // Categories
+            'categories.id as categories counting products',
+            // Designer attributes
+            'variants.attributes.designer.key as designer-keys counting products',
+            'variants.attributes.designer.label as designer-labels counting products',
+            // Color attributes
+            'variants.attributes.color.key as color-keys counting products',
+            'variants.attributes.color.label.en as color-labels counting products',
+          ],
+          sort,
+          page,
+          perPage,
+          markMatchingVariants: true,
+        })
+        .build(),
+      method: 'GET',
+    })
     .then((r) => r.body)
-
-export const getAllProducts = () =>
-  apiRoot
-    .withProjectKey({ projectKey })
-    .products()
-    .get()
-    .execute()
-    .then((r) => r.body)
-
-export const getProductWithKey = (key: string) =>
-  apiRoot
-    .withProjectKey({ projectKey })
-    .products()
-    .withKey({ key: key })
-    .get()
-    .execute()
-    .then((r) => r.body)
-
-export const getSortedProducts = (sort: string) =>
-  apiRoot
-    .withProjectKey({ projectKey })
-    .products()
-    .get({ queryArgs: { sort: sort } })
-    .execute()
-    .then((r) => r.body)
-
-export const increaseOrderNumber = (currentValue: number, version?: number) =>
-  apiRoot
-    .withProjectKey({ projectKey })
-    .customObjects()
-    .post({ body: { container, key, value: (currentValue ?? 0) + 1, version } })
-    .execute()
-    .then<OrderNumber>((r) => r.body)

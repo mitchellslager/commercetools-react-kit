@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { IFacettingState } from './types'
+import { IFacettingState, IPageState, SortOption } from './types'
 import { ILabeledValue } from '~src/utils/filter'
 
 const initialState: IFacettingState = {
@@ -10,8 +10,9 @@ const initialState: IFacettingState = {
   },
   sort: 'createdAt desc',
   page: {
-    limit: 20,
-    offset: 0,
+    limit: 10,
+    offset: 1,
+    total: 200,
   },
 }
 
@@ -38,13 +39,32 @@ export const facettingSlice = createSlice({
         ),
       },
     }),
-    setSortOption: (state, action: PayloadAction<string>) => ({
+    resetFilterOptions: (state) => ({
+      ...state,
+      filter: {
+        ...initialState.filter,
+      },
+    }),
+    setSortOption: (state, action: PayloadAction<SortOption>) => ({
       ...state,
       sort: action.payload,
+    }),
+    updatePagination: (state, action: PayloadAction<Partial<IPageState>>) => ({
+      ...state,
+      page: {
+        ...state.page,
+        ...action.payload,
+      },
     }),
   },
 })
 
-export const { setFilterOption, removeFilterOption, setSortOption } = facettingSlice.actions
+export const {
+  updatePagination,
+  setFilterOption,
+  removeFilterOption,
+  resetFilterOptions,
+  setSortOption,
+} = facettingSlice.actions
 
 export default facettingSlice.reducer

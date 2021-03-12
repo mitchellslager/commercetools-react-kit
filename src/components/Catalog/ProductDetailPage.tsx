@@ -31,7 +31,6 @@ const useStyles = makeStyles({
 const ProductDetailPage: React.FunctionComponent = () => {
   const classes = useStyles()
   const product = useProduct()
-  // console.log(product)
 
   if (!product) {
     return null

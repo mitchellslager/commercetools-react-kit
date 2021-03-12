@@ -1,9 +1,10 @@
 import { Box, FormControl, Grid, MenuItem, Select, Typography } from '@material-ui/core'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent } from 'react'
 import { useDispatch } from 'react-redux'
 import ProductItem from './ProductItem'
-import { useRootState } from '~src/utils/hooks'
 import { setSortOption } from '~src/store/facetting'
+import { SortOption } from '~src/store/facetting/types'
+import { useRootState } from '~src/utils/hooks'
 
 const ProductList: React.FunctionComponent = () => {
   const {
@@ -13,7 +14,7 @@ const ProductList: React.FunctionComponent = () => {
   const dispatch = useDispatch()
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatch(setSortOption(event.target.value))
+    dispatch(setSortOption(event.target.value as SortOption))
   }
 
   return (
@@ -25,10 +26,10 @@ const ProductList: React.FunctionComponent = () => {
           </Typography>
           <FormControl style={{ minWidth: 200 }}>
             <Select variant="outlined" value={sort} onChange={handleChange}>
-              <MenuItem value="createdAt asc">Popularity</MenuItem>
+              <MenuItem value="score desc">Popularity</MenuItem>
               <MenuItem value="createdAt desc">Newest products</MenuItem>
-              <MenuItem value="masterData.current.name.en desc">Lowest price</MenuItem>
-              <MenuItem value="masterData.current.name.en asc">Highest price</MenuItem>
+              <MenuItem value="price asc">Lowest price</MenuItem>
+              <MenuItem value="price desc">Highest price</MenuItem>
             </Select>
           </FormControl>
         </Box>
