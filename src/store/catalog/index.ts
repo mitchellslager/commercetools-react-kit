@@ -1,6 +1,6 @@
 import { ProductProjection, Category } from '@commercetools/platform-sdk'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ICatalogState } from './types'
+import { ICatalogState, IFacets } from './types'
 
 const initialState: ICatalogState = {
   products: [],
@@ -22,7 +22,7 @@ export const catalogSlice = createSlice({
     setCategories: (state, action: PayloadAction<Category[]>) => {
       state.categories = action.payload
     },
-    setFacets: (state, action: PayloadAction<any[]>) => ({
+    setFacets: (state, action: PayloadAction<IFacets>) => ({
       ...state,
       facets: action.payload,
     }),

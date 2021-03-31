@@ -10,18 +10,11 @@ import React from 'react'
 
 const useStyles = makeStyles(
   {
-    root: {
-      '& .MuiAccordionSummary-root': {
-        paddingLeft: 0,
-        paddingRight: 0,
-      },
-      '& .MuiAccordionDetails-root': {
-        paddingLeft: 0,
-        paddingRight: 0,
-      },
-    },
+    root: {},
+    summary: {},
+    details: {},
   },
-  { name: 'MuiFacetItem' }
+  { name: 'MuiFilterBlock' }
 )
 
 const FilterBlock: React.FunctionComponent<AccordionProps & { title: string }> = ({
@@ -32,17 +25,24 @@ const FilterBlock: React.FunctionComponent<AccordionProps & { title: string }> =
   const classes = useStyles()
 
   return (
-    <Accordion defaultExpanded={defaultExpanded} square elevation={0} className={classes.root}>
+    <Accordion defaultExpanded={defaultExpanded} className={classes.root}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`facet-${title}-content`}
         id={`facet-${title}-header`}
+        className={classes.summary}
       >
         {title}
       </AccordionSummary>
-      <AccordionDetails>{children}</AccordionDetails>
+      <AccordionDetails className={classes.details}>{children}</AccordionDetails>
     </Accordion>
   )
 }
 
 export default FilterBlock
+
+declare module '@material-ui/core/styles/overrides' {
+  interface ComponentNameToClassKey {
+    MuiFilterBlock: keyof ReturnType<typeof useStyles>
+  }
+}

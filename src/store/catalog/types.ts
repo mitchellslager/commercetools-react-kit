@@ -3,8 +3,8 @@ import { Category, ProductProjection } from '@commercetools/platform-sdk'
 export interface IFacetOption {
   key: string
   label: string
-  count: number
-  productCount: number
+  count?: number
+  productCount?: number
 }
 
 export interface IFacets {

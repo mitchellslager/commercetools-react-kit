@@ -1,7 +1,7 @@
 import { useRouteMatch } from 'react-router-dom'
 
 export const HOME_ROUTE = '/'
-export const PRODUCT_ROUTE = '/product/:key'
+export const PRODUCT_ROUTE = '/product/:slug'
 export const CATEGORY_ROUTE = '/category/:slug'
 export const ACCOUNT_ROUTE = '/account/'
 export const REGISTER_ROUTE = '/register/'

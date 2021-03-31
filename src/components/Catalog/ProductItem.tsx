@@ -30,10 +30,10 @@ const useStyles = makeStyles((theme) => ({
 
 const ProductItem: React.FunctionComponent<{ product: ProductProjection }> = ({ product }) => {
   const classes = useStyles()
-  const key = product.key
+  const slug = product.slug.en
 
   return (
-    <RouterLink to={`/product/${key}`} className={classes.root}>
+    <RouterLink to={`/product/${slug}`} className={classes.root}>
       <img
         src={product.masterVariant.images[0].url}
         alt="Product image"

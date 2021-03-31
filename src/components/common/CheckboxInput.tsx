@@ -28,16 +28,16 @@ const CheckboxInput = ({
     <FormControlLabel
       control={
         <Checkbox
+          color="primary"
           value={value}
           checked={checked}
-          inputProps={{ 'aria-label': 'primary checkbox' }}
           disableRipple
           className={classes.control}
           onChange={onChange}
         />
       }
       value={value}
-      label={`${label} ${numberOfProducts ?? '(n/a)'}`}
+      label={`${label} ${numberOfProducts ?? ''}`}
       className={classes.root}
     />
   )

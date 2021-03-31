@@ -1,6 +1,7 @@
 import { Category, TermFacetResult } from '@commercetools/platform-sdk'
 import { IFacetOption, IFacets } from '~src/store/catalog/types'
 import { IFilterState, SortOption } from '~src/store/facetting/types'
+import { byLabel } from './sort'
 // import { IFilterState } from '~src/store/facetting/types'
 
 export interface ILabeledValue<T> {
@@ -14,7 +15,8 @@ export interface IFilterOptions {
   colors: ILabeledValue<string>[]
 }
 
-const mapCategoriesToFilterOptions = (categories: Category[]): ILabeledValue<string>[] => {
+const mapCategoriesToFilterOptions = (categories: Category[]) => {
+  // We need to find the product count for each category in the facetting options
   return categories
     .filter((c) => !c.ancestors.length)
     .map((value) => ({
@@ -24,11 +26,13 @@ const mapCategoriesToFilterOptions = (categories: Category[]): ILabeledValue<str
 }
 
 const mapFacetsToFilterOptions = (facets: IFacetOption[]) => {
-  return facets.map((facet) => ({
-    label: facet.label,
-    value: facet.key,
-    count: facet.productCount,
-  }))
+  return facets
+    .map((facet) => ({
+      label: facet.label,
+      value: facet.key,
+      count: facet.productCount,
+    }))
+    .sort(byLabel)
 }
 
 export const filterOptions = (facets: IFacets, categories: Category[]) => {
@@ -51,11 +55,11 @@ export const buildFilterQuery = (filter: IFilterState) => {
   }
 
   if (filter.colors.length) {
-    queries.push(`variants.attributes.color.key:"${filter.colors.join('","')}"`)
+    queries.push(`variants.attributes.color.label.en:"${filter.colors.join('","')}"`)
   }
 
   if (filter.designer.length) {
-    queries.push(`variants.attributes.designer.key:"${filter.designer.join('","')}"`)
+    queries.push(`variants.attributes.designer.label:"${filter.designer.join('","')}"`)
   }
 
   return queries
@@ -68,22 +72,13 @@ export const buildSortingOption = (sort: SortOption): { by: string; direction: '
   }
 }
 
-export const buildFacettingOptions = (
-  facetKeys: TermFacetResult,
-  facetLabels: TermFacetResult
-): IFacetOption[] => {
-  let facets: IFacetOption[] = []
-  // We need to make a new object that combines the values from both facet results.
-  facetKeys.terms.forEach((facet, index) => {
-    let result = {
-      key: facet.term,
-      label: facetLabels.terms[index].term,
-      count: facet.count,
-      productCount: facet.productCount,
-    }
+export const buildFacettingOptions = (facetLabels: TermFacetResult): IFacetOption[] => {
+  const result = facetLabels.terms.map((item) => ({
+    key: item.term,
+    label: item.term,
+    count: item.count,
+    productCount: item.productCount,
+  }))
 
-    facets.push(result)
-  })
-
-  return facets
+  return result
 }
